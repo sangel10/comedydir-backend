@@ -18,5 +18,6 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^events/', include('events.urls')),
+    url(r'^scheduler/', include('schedule.urls')),
     url(r'^admin/', admin.site.urls),
 ]
