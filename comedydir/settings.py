@@ -30,8 +30,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'schedule',
-    'djangobower',
+    'recurrence',
+    'eventtools',
     'events.apps.EventsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -123,14 +123,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATICFILES_FINDERS =[
-    'djangobower.finders.BowerFinder',
+    # 'djangobower.finders.BowerFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+#
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, 'static'),
+# )
 
 
 
@@ -138,10 +138,10 @@ STATICFILES_DIRS = (
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
-COMPONENTS_ROOT = os.path.join(BASE_DIR, "components")
-
-BOWER_INSTALLED_APPS = (
-    'jquery',
-    'jquery-ui',
-    'bootstrap'
-)
+# COMPONENTS_ROOT = os.path.join(BASE_DIR, "components")
+#
+# BOWER_INSTALLED_APPS = (
+#     'jquery',
+#     'jquery-ui',
+#     'bootstrap'
+# )

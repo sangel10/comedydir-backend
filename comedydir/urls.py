@@ -15,9 +15,25 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+import django
+
+
+
 
 urlpatterns = [
     url(r'^events/', include('events.urls')),
-    url(r'^scheduler/', include('schedule.urls')),
     url(r'^admin/', admin.site.urls),
+]
+
+
+# If you already have a js_info_dict dictionary, just add
+# 'recurrence' to the existing 'packages' tuple.
+
+js_info_dict = {
+    'packages': ('recurrence', ),
+}
+
+# jsi18n can be anything you like here
+urlpatterns += [
+    url(r'^jsi18n/$', django.views.i18n.javascript_catalog, js_info_dict),
 ]
