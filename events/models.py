@@ -29,3 +29,68 @@ class ComplexEvent(BaseEvent):
 
 class MyOccurrence(BaseOccurrence):
     event = models.ForeignKey(ComplexEvent)
+
+
+class Show(models.Model):
+    title = models.CharField(max_length=100)
+
+
+from location_field.models.plain import PlainLocationField
+from geoposition.fields import GeopositionField
+
+import googlemaps
+from datetime import datetime
+from django.conf import settings
+
+gmaps = googlemaps.Client(key=settings.GEOPOSITION_GOOGLE_MAPS_API_KEY)
+
+class Place(models.Model):
+    address = models.CharField(max_length=255)
+    location = PlainLocationField(based_fields=['address'], zoom=7, null=True)
+    latitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
+    formatted_address = models.CharField(max_length=255, blank=True)
+    country = models.CharField(max_length=255, blank=True)
+    administrative_area_level_1 = models.CharField(max_length=255, blank=True)
+    administrative_area_level_2 = models.CharField(max_length=255, blank=True)
+    administrative_area_level_3 = models.CharField(max_length=255, blank=True)
+    locality = models.CharField(max_length=255, blank=True)
+    sublocality_level_1 = models.CharField(max_length=255, blank=True)
+    sublocality_level_2 = models.CharField(max_length=255, blank=True)
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+@receiver(post_save, sender=Place)
+def update_place(sender, instance, **kwargs):
+    location = instance.location
+    lat, lon = location.split(',')
+    if (instance.latitude != lat or instance.longitude != lon):
+
+        print("not equal")
+        instance.latitude = lat
+        instance.longitude = lon
+        reverse_geocode_result = gmaps.reverse_geocode((lat, lon))
+        instance.formatted_address = reverse_geocode_result[0]['formatted_address']
+        google_keys = [
+            'formatted_address',
+            'country',
+            'administrative_area_level_1',
+            'administrative_area_level_2',
+            'administrative_area_level_3',
+            'locality',
+            'sublocality_level_1',
+            'sublocality_level_2',
+        ]
+        new_data = {}
+        for obj in reverse_geocode_result[0]['address_components']:
+            for google_key in google_keys:
+                if google_key in obj['types']:
+                    # new_data[google_key] = obj['long_name']
+                    setattr(instance, google_key, obj['long_name'])
+        print('RESULT', new_data)
+        instance.save()
+    return
+
+class PointOfInterest(models.Model):
+    name = models.CharField(max_length=100)
+    position = GeopositionField()

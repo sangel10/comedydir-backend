@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'recurrence',
     'eventtools',
+    'geoposition',
+    'location_field.apps.DefaultConfig',
     'events.apps.EventsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'mapwidgets',
 ]
 
 MIDDLEWARE = [
@@ -145,3 +148,6 @@ STATIC_URL = '/static/'
 #     'jquery-ui',
 #     'bootstrap'
 # )
+
+
+GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyAx3Hzo8kQHwQd1lytV_l0RmMMNzBM2i8Q'
