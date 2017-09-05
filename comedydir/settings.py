@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'mapwidgets',
+    'mapwidgets',
+    # 'address'
 ]
 
 MIDDLEWARE = [
@@ -141,13 +142,26 @@ STATICFILES_FINDERS =[
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
-# COMPONENTS_ROOT = os.path.join(BASE_DIR, "components")
-#
-# BOWER_INSTALLED_APPS = (
-#     'jquery',
-#     'jquery-ui',
-#     'bootstrap'
-# )
+COMPONENTS_ROOT = os.path.join(BASE_DIR, "components")
+
+BOWER_INSTALLED_APPS = (
+    'jquery',
+    'jquery-ui',
+    'bootstrap'
+)
 
 
-GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyAx3Hzo8kQHwQd1lytV_l0RmMMNzBM2i8Q'
+GOOGLE_MAP_API_KEY = GOOGLE_API_KEY = GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyCfEghEN8EUWO5-w6aEof1vnc5xSFJ0f3U'
+
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 15),
+        ("markerFitZoom", 12),
+    ),
+    "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY
+}
+
+# Do not set on server so they default to NONE
+# https://www.alextomkins.com/2017/08/fixing-gdal-geos-django-macos/
+GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
+GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')

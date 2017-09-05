@@ -44,9 +44,13 @@ from django.conf import settings
 
 gmaps = googlemaps.Client(key=settings.GEOPOSITION_GOOGLE_MAPS_API_KEY)
 
+class ArbitraryField(models.CharField):
+    pass
+
 class Place(models.Model):
-    address = models.CharField(max_length=255)
-    location = PlainLocationField(based_fields=['address'], zoom=7, null=True)
+    name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255, help_text="Map will update as you type, other fields update on save")
+    location = PlainLocationField(based_fields=['address'], zoom=7, null=True, help_text="Don't touch this")
     latitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
     longitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
     formatted_address = models.CharField(max_length=255, blank=True)
@@ -57,10 +61,11 @@ class Place(models.Model):
     locality = models.CharField(max_length=255, blank=True)
     sublocality_level_1 = models.CharField(max_length=255, blank=True)
     sublocality_level_2 = models.CharField(max_length=255, blank=True)
+    arbitrary = ArbitraryField(max_length=255, blank=True)
 
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-@receiver(post_save, sender=Place)
+@receiver(pre_save, sender=Place)
 def update_place(sender, instance, **kwargs):
     location = instance.location
     lat, lon = location.split(',')
@@ -87,10 +92,16 @@ def update_place(sender, instance, **kwargs):
                 if google_key in obj['types']:
                     # new_data[google_key] = obj['long_name']
                     setattr(instance, google_key, obj['long_name'])
-        print('RESULT', new_data)
+        print('RESULT', reverse_geocode_result)
         instance.save()
     return
 
 class PointOfInterest(models.Model):
     name = models.CharField(max_length=100)
     position = GeopositionField()
+
+
+class CustomLocation(models.Model):
+    name = models.CharField(max_length=255)
+    latitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)

@@ -65,7 +65,6 @@
             },
 
             fill: function(latLng) {
-                console.log('filling')
                 this.options.inputField.val(latLng.lat + ',' + latLng.lng);
             },
 
@@ -270,7 +269,6 @@
 
                 // fill input on dragend
                 marker.on('dragend move', function(){
-                    console.log('move', this)
                     self.fill(this.getLatLng());
                 });
 
