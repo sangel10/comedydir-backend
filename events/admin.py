@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Question, BasicEvent, Choice, ComplexEvent, MyOccurrence, \
-    Place, CustomLocation, ArbitraryField
+from .models import BasicEvent, ComplexEvent, MyOccurrence, Place, MockPointField
 
 from location_field.models.plain import PlainLocationField
 
@@ -24,14 +23,9 @@ class PlaceAdmin(admin.ModelAdmin):
     )
 
     formfield_overrides = {
-        ArbitraryField: {"widget": GooglePointFieldWidget}
+        MockPointField: {"widget": GooglePointFieldWidget}
     }
 
-admin.site.register(Place, PlaceAdmin)
-
-admin.site.register(Question)
 admin.site.register(BasicEvent)
-admin.site.register(Choice)
-admin.site.register(ComplexEvent)
 admin.site.register(MyOccurrence)
-admin.site.register(CustomLocation)
+admin.site.register(Place, PlaceAdmin)

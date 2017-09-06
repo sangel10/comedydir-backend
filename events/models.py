@@ -17,16 +17,6 @@ class BasicEvent(models.Model):
     recurrences = RecurrenceField(null=True)
 
 
-class Question(models.Model):
-    question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
-
-
-class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
-
 class ComplexEvent(BaseEvent):
     title = models.CharField(max_length=100)
 
@@ -38,11 +28,9 @@ class MyOccurrence(BaseOccurrence):
 class Show(models.Model):
     title = models.CharField(max_length=100)
 
-
-
 gmaps = googlemaps.Client(key=settings.GOOGLE_MAP_API_KEY)
 
-class ArbitraryField(models.CharField):
+class MockPointField(models.CharField):
     pass
 
 class Place(models.Model):
@@ -60,7 +48,7 @@ class Place(models.Model):
     sublocality_level_1 = models.CharField(max_length=255, blank=True)
     sublocality_level_2 = models.CharField(max_length=255, blank=True)
     neighborhood = models.CharField(max_length=255, blank=True)
-    arbitrary = ArbitraryField(max_length=255, blank=True)
+    # arbitrary = MockPointField(max_length=255, blank=True)
 
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
@@ -97,9 +85,3 @@ def update_place(sender, instance, **kwargs):
 
         instance.save()
     return
-
-
-class CustomLocation(models.Model):
-    name = models.CharField(max_length=255)
-    latitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
