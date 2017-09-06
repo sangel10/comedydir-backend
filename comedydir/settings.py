@@ -32,7 +32,6 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'recurrence',
     'eventtools',
-    'geoposition',
     'location_field.apps.DefaultConfig',
     'events.apps.EventsConfig',
     'django.contrib.admin',
@@ -42,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mapwidgets',
-    # 'address'
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'comedydir.urls'
@@ -165,3 +165,5 @@ MAP_WIDGETS = {
 # https://www.alextomkins.com/2017/08/fixing-gdal-geos-django-macos/
 GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
 GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
+
+INTERNAL_IPS = ['127.0.0.1']

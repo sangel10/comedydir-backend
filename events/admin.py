@@ -1,18 +1,11 @@
 from django.contrib import admin
 from .models import Question, BasicEvent, Choice, ComplexEvent, MyOccurrence, \
-    Place, PointOfInterest, CustomLocation, ArbitraryField
+    Place, CustomLocation, ArbitraryField
 
 from location_field.models.plain import PlainLocationField
 
 
 from mapwidgets.widgets import GooglePointFieldWidget
-#
-# class CityAdmin(admin.ModelAdmin):
-#     formfield_overrides = {
-#         models.PointField: {"widget": GooglePointFieldWidget}
-#     }
-#
-
 
 class PlaceAdmin(admin.ModelAdmin):
     readonly_fields = (
@@ -40,6 +33,4 @@ admin.site.register(BasicEvent)
 admin.site.register(Choice)
 admin.site.register(ComplexEvent)
 admin.site.register(MyOccurrence)
-# admin.site.register(Place)
-admin.site.register(PointOfInterest)
 admin.site.register(CustomLocation)

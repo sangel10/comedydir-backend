@@ -1,6 +1,12 @@
 from django.db import models
 from recurrence.fields import RecurrenceField
-# Create your models here.
+from eventtools.models import BaseEvent, BaseOccurrence
+
+from location_field.models.plain import PlainLocationField
+
+import googlemaps
+from datetime import datetime
+from django.conf import settings
 
 class BasicEvent(models.Model):
     title = models.CharField(max_length=100)
@@ -19,10 +25,6 @@ class Choice(models.Model):
     choice_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
 
-
-
-from eventtools.models import BaseEvent, BaseOccurrence
-
 class ComplexEvent(BaseEvent):
     title = models.CharField(max_length=100)
 
@@ -35,14 +37,8 @@ class Show(models.Model):
     title = models.CharField(max_length=100)
 
 
-from location_field.models.plain import PlainLocationField
-from geoposition.fields import GeopositionField
 
-import googlemaps
-from datetime import datetime
-from django.conf import settings
-
-gmaps = googlemaps.Client(key=settings.GEOPOSITION_GOOGLE_MAPS_API_KEY)
+gmaps = googlemaps.Client(key=settings.GOOGLE_MAP_API_KEY)
 
 class ArbitraryField(models.CharField):
     pass
@@ -96,9 +92,9 @@ def update_place(sender, instance, **kwargs):
         instance.save()
     return
 
-class PointOfInterest(models.Model):
-    name = models.CharField(max_length=100)
-    position = GeopositionField()
+# class PointOfInterest(models.Model):
+#     name = models.CharField(max_length=100)
+#     position = GeopositionField()
 
 
 class CustomLocation(models.Model):

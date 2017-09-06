@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 import django
@@ -37,3 +38,10 @@ js_info_dict = {
 urlpatterns += [
     url(r'^jsi18n/$', django.views.i18n.javascript_catalog, js_info_dict),
 ]
+
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
