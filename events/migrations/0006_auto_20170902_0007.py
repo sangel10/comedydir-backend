@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import geoposition.fields
+# import geoposition.fields
 
 
 class Migration(migrations.Migration):
@@ -13,16 +13,16 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='PointOfInterest',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('position', geoposition.fields.GeopositionField(max_length=42)),
-            ],
-        ),
-        migrations.RemoveField(
-            model_name='place',
-            name='location2',
-        ),
+        # migrations.CreateModel(
+        #     name='PointOfInterest',
+        #     fields=[
+        #         ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+        #         ('name', models.CharField(max_length=100)),
+        #         ('position', geoposition.fields.GeopositionField(max_length=42)),
+        #     ],
+        # ),
+        # migrations.RemoveField(
+        #     model_name='place',
+        #     name='location2',
+        # ),
     ]

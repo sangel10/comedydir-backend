@@ -7,6 +7,7 @@ from location_field.models.plain import PlainLocationField
 
 from mapwidgets.widgets import GooglePointFieldWidget
 
+
 class PlaceAdmin(admin.ModelAdmin):
     readonly_fields = (
         'latitude',

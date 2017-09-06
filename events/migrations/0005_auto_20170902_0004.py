@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-import geoposition.fields
+# import geoposition.fields
 
 
 class Migration(migrations.Migration):
@@ -17,9 +17,9 @@ class Migration(migrations.Migration):
             model_name='place',
             name='location',
         ),
-        migrations.AddField(
-            model_name='place',
-            name='location2',
-            field=geoposition.fields.GeopositionField(max_length=42, null=True),
-        ),
+        # migrations.AddField(
+        #     model_name='place',
+        #     name='location2',
+        #     field=geoposition.fields.GeopositionField(max_length=42, null=True),
+        # ),
     ]

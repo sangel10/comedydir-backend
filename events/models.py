@@ -1,12 +1,14 @@
 from django.db import models
-from recurrence.fields import RecurrenceField
+from django.conf import settings
 from eventtools.models import BaseEvent, BaseOccurrence
-
 from location_field.models.plain import PlainLocationField
+from recurrence.fields import RecurrenceField
+
+from datetime import datetime
 
 import googlemaps
-from datetime import datetime
-from django.conf import settings
+import re
+
 
 class BasicEvent(models.Model):
     title = models.CharField(max_length=100)
@@ -57,14 +59,17 @@ class Place(models.Model):
     locality = models.CharField(max_length=255, blank=True)
     sublocality_level_1 = models.CharField(max_length=255, blank=True)
     sublocality_level_2 = models.CharField(max_length=255, blank=True)
+    neighborhood = models.CharField(max_length=255, blank=True)
     arbitrary = ArbitraryField(max_length=255, blank=True)
 
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 @receiver(pre_save, sender=Place)
 def update_place(sender, instance, **kwargs):
-    location = instance.location
-    lat, lon = location.split(',')
+    match_obj = re.match(r'POINT \((\S+) (\S+)\)', instance.arbitrary)
+    lon =  float(match_obj.group(1))
+    lat =  float(match_obj.group(2))
+    print(instance.arbitrary, lat, lon)
     if (instance.latitude != lat or instance.longitude != lon):
 
         print("not equal")
@@ -72,29 +77,26 @@ def update_place(sender, instance, **kwargs):
         instance.longitude = lon
         reverse_geocode_result = gmaps.reverse_geocode((lat, lon))
         instance.formatted_address = reverse_geocode_result[0]['formatted_address']
-        google_keys = [
-            'formatted_address',
-            'country',
-            'administrative_area_level_1',
-            'administrative_area_level_2',
-            'administrative_area_level_3',
-            'locality',
-            'sublocality_level_1',
-            'sublocality_level_2',
-        ]
-        new_data = {}
+        google_data = {
+            'formatted_address': '' ,
+            'country': '' ,
+            'administrative_area_level_1': '' ,
+            'administrative_area_level_2': '' ,
+            'administrative_area_level_3': '' ,
+            'locality': '' ,
+            'sublocality_level_1': '' ,
+            'sublocality_level_2': '' ,
+            'neighborhood': '',
+        }
         for obj in reverse_geocode_result[0]['address_components']:
-            for google_key in google_keys:
+            for google_key in google_data.keys():
                 if google_key in obj['types']:
-                    # new_data[google_key] = obj['long_name']
-                    setattr(instance, google_key, obj['long_name'])
-        print('RESULT', reverse_geocode_result)
+                    google_data[google_key] = obj['long_name']
+        for key in google_data.keys():
+            setattr(instance, key, google_data[key])
+
         instance.save()
     return
-
-# class PointOfInterest(models.Model):
-#     name = models.CharField(max_length=100)
-#     position = GeopositionField()
 
 
 class CustomLocation(models.Model):
