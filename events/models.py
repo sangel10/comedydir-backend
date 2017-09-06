@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from eventtools.models import BaseEvent, BaseOccurrence
-from location_field.models.plain import PlainLocationField
 from recurrence.fields import RecurrenceField
 
 from datetime import datetime
@@ -36,7 +35,6 @@ class MockPointField(models.CharField):
 class Place(models.Model):
     name = models.CharField(max_length=255)
     address = models.CharField(max_length=255, help_text="Map will update as you type, other fields update on save")
-    location = PlainLocationField(based_fields=['address'], zoom=7, null=True, help_text="Don't touch this")
     latitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
     longitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
     formatted_address = models.CharField(max_length=255, blank=True)

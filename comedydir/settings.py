@@ -32,7 +32,6 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'recurrence',
     'eventtools',
-    'location_field.apps.DefaultConfig',
     'events.apps.EventsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -127,29 +126,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATICFILES_FINDERS =[
-    # 'djangobower.finders.BowerFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
-#
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'static'),
-# )
-
 
 
 # STATIC_ROOT = 'static'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-
-COMPONENTS_ROOT = os.path.join(BASE_DIR, "components")
-
-BOWER_INSTALLED_APPS = (
-    'jquery',
-    'jquery-ui',
-    'bootstrap'
-)
-
 
 GOOGLE_MAP_API_KEY = GOOGLE_API_KEY = GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyCfEghEN8EUWO5-w6aEof1vnc5xSFJ0f3U'
 
