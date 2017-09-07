@@ -151,3 +151,17 @@ GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
 GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
 
 INTERNAL_IPS = ['127.0.0.1']
+
+
+# FB
+FACEBOOK_APP_ID = '122406461820685'
+FACEBOOK_APP_SECRET = '18690ef187ee39ef6a084f68670d34df'
+FACEBOOK_ACCESS_TOKEN = '{}|{}'.format(FACEBOOK_APP_ID, FACEBOOK_APP_SECRET)
+FACEBOOK_GRAPH_API_VERSION = '2.10'
+#
+# AUTHENTICATION_BACKENDS = (
+#     'django_facebook.auth_backends.FacebookBackend',
+#     'django.contrib.auth.backends.ModelBackend',
+# )
+#
+# AUTH_USER_MODEL = 'django_facebook.FacebookCustomUser'

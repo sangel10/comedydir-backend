@@ -19,13 +19,10 @@ from django.contrib import admin
 import django
 
 
-
-
 urlpatterns = [
     url(r'^events/', include('events.urls')),
     url(r'^admin/', admin.site.urls),
 ]
-
 
 # If you already have a js_info_dict dictionary, just add
 # 'recurrence' to the existing 'packages' tuple.
