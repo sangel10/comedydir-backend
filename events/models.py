@@ -1,8 +1,5 @@
 from django.db import models
 from django.conf import settings
-from eventtools.models import BaseEvent, BaseOccurrence
-from recurrence.fields import RecurrenceField
-
 from datetime import datetime
 
 import googlemaps
@@ -12,22 +9,29 @@ class FacebookEvent(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     start_time = models.DateTimeField('event date')
-    end_time = models.DateTimeField('event date')
-    facebook_url = models.URLField()
+    end_time = models.DateTimeField('event date', null=True)
     facebook_place = models.ForeignKey('FacebookPlace', on_delete=models.PROTECT)
+    facebook_id = models.CharField(max_length=255)
     # image
+    # status (reviewd, etc)
     def __str__(self):
-        return '%s' % (self.name)
+        return '{}'.format(self.name)
 
+    def get_fb_url(self):
+        return 'facebook.com/events/{}'.format(self.facebook_id)
 
 
 class FacebookPage(models.Model):
     name = models.CharField(max_length=255)
     about = models.TextField(blank=True)
-    facebook_url = models.CharField(max_length=255)
+    facebook_id = models.CharField(max_length=255)
+    # status (to-scrape,, reviewed etc)
 
     def __str__(self):
         return '%s' % (self.name)
+
+    def get_fb_url(self):
+        return 'facebook.com/{}'.format(self.facebook_id)
 
 
 class FacebookPlace(models.Model):
@@ -36,14 +40,19 @@ class FacebookPlace(models.Model):
     facebook_name = models.CharField(max_length=255)
     facebook_city = models.CharField(max_length=255)
     facebook_country = models.CharField(max_length=255)
-    facebook_zip = models.CharField(max_length=255)
-    facebook_street = models.CharField(max_length=255)
+    facebook_zip = models.CharField(max_length=255, null=True)
+    facebook_street = models.CharField(max_length=255, null=True)
+    facebook_id = models.CharField(max_length=255)
 
     def __str__(self):
         return '%s' % (self.facebook_name)
 
     class Meta:
         unique_together = (('latitude', 'longitude', 'facebook_name'),)
+
+
+# FB Group
+
 
 # gmaps = googlemaps.Client(key=settings.GOOGLE_MAP_API_KEY)
 #
