@@ -1,5 +1,6 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
+from django.utils.html import format_html
 from datetime import datetime
 
 import googlemaps
@@ -12,6 +13,14 @@ class FacebookEvent(models.Model):
     end_time = models.DateTimeField('event date', null=True)
     facebook_place = models.ForeignKey('FacebookPlace', on_delete=models.PROTECT)
     facebook_id = models.CharField(max_length=255)
+    image_url = models.URLField(max_length=255, blank=True)
+
+    def image_tag(self):
+        return format_html(
+            '<img src="{}"/>',
+            self.image_url,
+        )
+
     # image
     # status (reviewd, etc)
     def __str__(self):
@@ -51,7 +60,11 @@ class FacebookPlace(models.Model):
         unique_together = (('latitude', 'longitude', 'facebook_name'),)
 
 
-# FB Group
+class FacebookGroup(models.Model):
+    name = models.CharField(max_length=255)
+    facebook_id = models.CharField(max_length=255)
+    def __str__(self):
+        return '%s' % (self.name)
 
 
 # gmaps = googlemaps.Client(key=settings.GOOGLE_MAP_API_KEY)
