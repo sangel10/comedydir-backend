@@ -14,6 +14,14 @@ class FacebookEventAdmin(admin.ModelAdmin):
         'facebook_id',
         'image_tag',
     )
+    list_display = (
+        'name',
+        'description',
+        'start_time',
+        'end_time',
+        'facebook_place',
+        'facebook_id',
+    )
     readonly_fields = ('image_tag',)
 
 admin.site.register(FacebookEvent, FacebookEventAdmin)
