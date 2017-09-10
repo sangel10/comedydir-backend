@@ -65,7 +65,7 @@ class FacebookPlace(models.Model):
     facebook_id = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
-        return '%s' % (self.facebook_name)
+        return '{} - {}, {}'.format(self.facebook_name, self.facebook_city, self.facebook_country)
 
     class Meta:
         unique_together = (('latitude', 'longitude'),)
