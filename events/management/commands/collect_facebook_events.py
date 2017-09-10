@@ -6,6 +6,7 @@ import re
 from events.models import FacebookEvent, FacebookPlace, FacebookGroup
 from pprint import pprint
 from psycopg2 import IntegrityError
+from decimal import Decimal
 
 class Command(BaseCommand):
     help = 'Reads facebook data and saves events in DB'
@@ -30,17 +31,40 @@ class Command(BaseCommand):
             'facebook_street':  location_data['location'].get('street',''),
             'facebook_zip':  location_data['location'].get('zip',''),
         }
+        fb_place = None
+        if not location_dict['facebook_id']:
+            return fb_place
         try:
-            fb_place = FacebookPlace.objects.get(facebook_id=location_data['id'])
-        except KeyError as e:
-            fb_place = FacebookPlace.objects.create(**location_dict)
-        except FacebookPlace.DoesNotExist:
-            fb_place = FacebookPlace.objects.create(**location_dict)
-        fb_place.save()
+            fb_place = FacebookPlace.objects.get(
+                facebook_id=location_dict['facebook_id'],
+                # latitude=location_dict['latitude'],
+                # longitude=location_dict['longitude'],
+            )
+        except FacebookPlace.DoesNotExist as e:
+            try:
+                fb_place = FacebookPlace.objects.get(
+                    latitude__gte=(location_data['location']['latitude'] - 0.001),
+                    latitude__lte=(location_data['location']['latitude'] + 0.001),
+                    longitude__gte=(location_data['location']['longitude'] - 0.001),
+                    longitude__lte=(location_data['location']['longitude'] + 0.001),
+                )
+            # if fb_place.exists():
+            #     for key,value in location_dict.items():
+            #         setattr(fb_place, key, value)
+            #     fb_place.save()
+            except FacebookPlace.DoesNotExist as e:
+                print('LOCATION does not exist', e)
+            #     # import pdb; pdb.set_trace()
+                fb_place = FacebookPlace.objects.create(**location_dict)
+                fb_place.save()
         return fb_place
 
     def save_event(self, event_id):
-        event_data = self.GRAPH.get_object(id=event_id, fields='id,name,description,start_time,end_time,place,cover')
+        try:
+            event_data = self.GRAPH.get_object(id=event_id, fields='id,name,description,start_time,end_time,place,cover')
+        except facebook.GraphAPIError as e:
+            self.stdout.write(self.style.WARNING('Skipping event {}'.format(e)))
+            return
         start = datetime.strptime(event_data['start_time'], self.FACEBOOK_DATETIME_FORMAT)
         # if the event has already passed we skip it
         # if start.timestamp() < datetime.now().timestamp():
@@ -51,23 +75,18 @@ class Command(BaseCommand):
 
         location = self.save_location(event_data['place'])
         if not location:
-            self.stdout.write(self.style.NOTICE('Skipping Event - No Location'))
+            self.stdout.write(self.style.NOTICE('Skipping Event - No Location {}').format(event_data['place']))
             return None
         fb_fields = {
             'facebook_id': event_data['id'],
             'name': event_data['name'],
-            'description': event_data['description'],
+            'description': event_data.get('description', ' '),
             'start_time': datetime.strptime(event_data['start_time'], self.FACEBOOK_DATETIME_FORMAT),
             'facebook_place': location,
         }
         if 'cover' in event_data:
-            print('COVER!!!',  event_data['cover']['source'])
             fb_fields['image_url'] = event_data['cover']['source']
-        # event_image = self.GRAPH.get_connections(event_id, 'picture', fields="", redirect=0)
-        # pprint(event_image)
-        # if 'url' in event_image['data']:
-        #     fb_fields['image_url'] = event_image['data']['url']
-        #     print(event_image['data']['url'])
+
         # if 'end_time' in event_data:
         #     print('end time', event_data['end_time'])
         #     fb_fields['end_time'] = datetime.strptime(event_data['end_time'], self.FACEBOOK_DATETIME_FORMAT),
@@ -89,11 +108,16 @@ class Command(BaseCommand):
         return fb_event
 
     def handle(self, *args, **kwargs):
-        last_month = datetime.now() - timedelta(days=30)
+        days = 90
+        last_month = datetime.now() - timedelta(days=days)
         since_timestamp = round(last_month.timestamp())
         for group in FacebookGroup.objects.all():
             group_id = group.facebook_id
-            connection = self.GRAPH.get_object(id=group_id, fields='name')
+            try:
+                connection = self.GRAPH.get_object(id=group_id, fields='name')
+            except facebook.GraphAPIError as e:
+                self.stdout.write(self.style.WARNING('Skipping group {}'.format(e)))
+                continue
             group.name = connection['name']
             group.save()
             connections = self.GRAPH.get_all_connections(group_id, 'feed', fields='link,message,message_tags',since=since_timestamp)

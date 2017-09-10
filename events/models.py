@@ -1,8 +1,9 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 from django.utils.html import format_html
-from datetime import datetime
-
+from datetime import datetime, timedelta
 import googlemaps
 import re
 
@@ -20,7 +21,6 @@ class FacebookEvent(models.Model):
             '<img src="{}"/>',
             self.image_url,
         )
-
     # image
     # status (reviewd, etc)
     def __str__(self):
@@ -29,6 +29,17 @@ class FacebookEvent(models.Model):
     def get_fb_url(self):
         return 'facebook.com/events/{}'.format(self.facebook_id)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['start_time', 'end_time']),
+        ]
+
+@receiver(pre_save, sender=FacebookEvent)
+def pre_save_fb_event(sender, instance, **kwargs):
+    # By default if no end time is specified we assume a show lasts 2 hours
+    if instance.start_time and not instance.end_time:
+        instance.end_time = instance.start_time + timedelta(hours=2)
+    return
 
 class FacebookPage(models.Model):
     name = models.CharField(max_length=255)
@@ -44,21 +55,23 @@ class FacebookPage(models.Model):
 
 
 class FacebookPlace(models.Model):
-    latitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
-    longitude = models.DecimalField(max_digits=24, decimal_places=20, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=10, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=6, null=True, blank=True)
     facebook_name = models.CharField(max_length=255)
     facebook_city = models.CharField(max_length=255)
     facebook_country = models.CharField(max_length=255)
     facebook_zip = models.CharField(max_length=255, null=True)
     facebook_street = models.CharField(max_length=255, null=True)
-    facebook_id = models.CharField(max_length=255)
+    facebook_id = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return '%s' % (self.facebook_name)
 
     class Meta:
-        unique_together = (('latitude', 'longitude', 'facebook_name'),)
-
+        unique_together = (('latitude', 'longitude'),)
+        indexes = [
+            models.Index(fields=['latitude', 'longitude']),
+        ]
 
 class FacebookGroup(models.Model):
     name = models.CharField(max_length=255)
@@ -90,8 +103,7 @@ class FacebookGroup(models.Model):
 #     def __str__(self):
 #         return '%s' % (self.name)
 #
-# from django.db.models.signals import post_save, pre_save
-# from django.dispatch import receiver
+
 # @receiver(pre_save, sender=Location)
 # def update_place(sender, instance, **kwargs):
 #     match_obj = re.match(r'POINT \((\S+) (\S+)\)', instance.search)
