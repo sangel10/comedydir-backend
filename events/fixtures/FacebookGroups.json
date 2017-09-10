@@ -1,0 +1,90 @@
+[
+  {
+    "model": "events.FacebookGroup",
+    "pk": 1,
+    "fields": {
+      "facebook_id": "139773036092597",
+      "name": " "
+    }
+  },
+  {
+    "model": "events.FacebookGroup",
+    "pk": 2,
+    "fields": {
+      "facebook_id": "1073433549389618",
+      "name": " "
+    }
+  },
+  {
+    "model": "events.FacebookGroup",
+    "pk": 3,
+    "fields": {
+      "facebook_id": "538761512867489",
+      "name": " "
+    }
+  },
+  {
+    "model": "events.FacebookGroup",
+    "pk": 4,
+    "fields": {
+      "facebook_id": "129371483798497",
+      "name": " "
+    }
+  },
+  {
+    "model": "events.FacebookGroup",
+    "pk": 5,
+    "fields": {
+      "facebook_id": "2472442595",
+      "name": " "
+    }
+  },
+  {
+    "model": "events.FacebookGroup",
+    "pk": 6,
+    "fields": {
+      "facebook_id": "276254692559835",
+      "name": " "
+    }
+  },
+  {
+    "model": "events.FacebookGroup",
+    "pk": 7,
+    "fields": {
+      "facebook_id": "593098204052819",
+      "name": " "
+    }
+  },
+  {
+    "model": "events.FacebookGroup",
+    "pk": 8,
+    "fields": {
+      "facebook_id": "1814445198866527",
+      "name": " "
+    }
+  },
+  {
+    "model": "events.FacebookGroup",
+    "pk": 9,
+    "fields": {
+      "facebook_id": "209897822492693",
+      "name": " "
+    }
+  },
+  {
+    "model": "events.FacebookGroup",
+    "pk": 9,
+    "fields": {
+      "facebook_id": "1495890073965816",
+      "name": " "
+    }
+  },
+  {
+    "model": "events.FacebookGroup",
+    "pk": 9,
+    "fields": {
+      "facebook_id": "1489427164653422",
+      "name": " "
+    }
+  }
+]
