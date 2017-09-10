@@ -37,24 +37,19 @@ class Command(BaseCommand):
         try:
             fb_place = FacebookPlace.objects.get(
                 facebook_id=location_dict['facebook_id'],
-                # latitude=location_dict['latitude'],
-                # longitude=location_dict['longitude'],
             )
         except FacebookPlace.DoesNotExist as e:
             try:
+                # DecimalField doesn't always give an exact match, so we add some padding to catch
+                # inexact numbers
+                offset = 0.000001
                 fb_place = FacebookPlace.objects.get(
-                    latitude__gte=(location_data['location']['latitude'] - 0.001),
-                    latitude__lte=(location_data['location']['latitude'] + 0.001),
-                    longitude__gte=(location_data['location']['longitude'] - 0.001),
-                    longitude__lte=(location_data['location']['longitude'] + 0.001),
+                    latitude__gte=(location_data['location']['latitude'] - offset),
+                    latitude__lte=(location_data['location']['latitude'] + offset),
+                    longitude__gte=(location_data['location']['longitude'] - offset),
+                    longitude__lte=(location_data['location']['longitude'] + offset),
                 )
-            # if fb_place.exists():
-            #     for key,value in location_dict.items():
-            #         setattr(fb_place, key, value)
-            #     fb_place.save()
             except FacebookPlace.DoesNotExist as e:
-                print('LOCATION does not exist', e)
-            #     # import pdb; pdb.set_trace()
                 fb_place = FacebookPlace.objects.create(**location_dict)
                 fb_place.save()
         return fb_place
