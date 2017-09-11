@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 import googlemaps
 import re
 
+gmaps = googlemaps.Client(key=settings.GOOGLE_MAP_API_KEY)
+
 class FacebookEvent(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -63,6 +65,15 @@ class FacebookPlace(models.Model):
     facebook_zip = models.CharField(max_length=255, null=True)
     facebook_street = models.CharField(max_length=255, null=True)
     facebook_id = models.CharField(max_length=255, blank=True)
+    google_formatted_address = models.CharField(max_length=255, blank=True)
+    google_country = models.CharField(max_length=255, blank=True)
+    google_administrative_area_level_1 = models.CharField(max_length=255, blank=True)
+    google_administrative_area_level_2 = models.CharField(max_length=255, blank=True)
+    google_administrative_area_level_3 = models.CharField(max_length=255, blank=True)
+    google_locality = models.CharField(max_length=255, blank=True)
+    google_sublocality_level_1 = models.CharField(max_length=255, blank=True)
+    google_sublocality_level_2 = models.CharField(max_length=255, blank=True)
+    google_neighborhood = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return '{} - {}, {}'.format(self.facebook_name, self.facebook_city, self.facebook_country)
@@ -72,6 +83,35 @@ class FacebookPlace(models.Model):
         indexes = [
             models.Index(fields=['latitude', 'longitude']),
         ]
+
+@receiver(pre_save, sender=FacebookPlace)
+def update_fb_place(sender, instance, **kwargs):
+    print('PRE SAAAVE')
+    # if instance.google_formatted_address or instance.google_locality or instance.google_country:
+    #     print('has google data')
+    #     return instance
+
+    reverse_geocode_result = gmaps.reverse_geocode((instance.latitude, instance.longitude))
+    google_data = {
+        'formatted_address': '' ,
+        'country': '' ,
+        'administrative_area_level_1': '' ,
+        'administrative_area_level_2': '' ,
+        'administrative_area_level_3': '' ,
+        'locality': '' ,
+        'sublocality_level_1': '' ,
+        'sublocality_level_2': '' ,
+        'neighborhood': '',
+    }
+    for obj in reverse_geocode_result[0]['address_components']:
+        for google_key in google_data.keys():
+            if google_key in obj['types']:
+                google_data[google_key] = obj['long_name']
+    print('google daa', google_data)
+    for key in google_data.keys():
+        setattr(instance, 'google_{}'.format(key), google_data[key])
+        instance.google_formatted_address = reverse_geocode_result[0]['formatted_address']
+    return instance
 
 class FacebookGroup(models.Model):
     name = models.CharField(max_length=255)
