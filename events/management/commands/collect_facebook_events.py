@@ -21,22 +21,13 @@ class Command(BaseCommand):
     def save_location(self, location_data):
         if ('location' not in location_data) or ('latitude' not in location_data['location']) or ('longitude' not in location_data['location']):
             return None
-        location_dict = {
-            'latitude':  location_data['location']['latitude'],
-            'longitude':  location_data['location']['longitude'],
-            'facebook_name': location_data['name'],
-            'facebook_id': location_data.get('id',''),
-            'facebook_city':  location_data['location']['city'],
-            'facebook_country':  location_data['location']['country'],
-            'facebook_street':  location_data['location'].get('street',''),
-            'facebook_zip':  location_data['location'].get('zip',''),
-        }
+
         fb_place = None
-        if not location_dict['facebook_id']:
+        if not location_data.get('id',''):
             return fb_place
         try:
             fb_place = FacebookPlace.objects.get(
-                facebook_id=location_dict['facebook_id'],
+                facebook_id=location_data.get('id',''),
             )
         except FacebookPlace.DoesNotExist as e:
             try:
@@ -50,6 +41,18 @@ class Command(BaseCommand):
                     longitude__lte=(location_data['location']['longitude'] + offset),
                 )
             except FacebookPlace.DoesNotExist as e:
+                place_data = self.GRAPH.get_object(location_data['id'], fields='name,id,location{latitude,longitude,city,street,zip,country,region}')
+                location_dict = {
+                    'facebook_name': place_data['name'],
+                    'facebook_id': place_data['id'],
+                    'latitude':  place_data['location']['latitude'],
+                    'longitude':  place_data['location']['longitude'],
+                    'facebook_city':  place_data['location']['city'],
+                    'facebook_country':  place_data['location']['country'],
+                    'facebook_street':  place_data['location'].get('street',''),
+                    'facebook_zip':  place_data['location'].get('zip',''),
+                    'facebook_region':  place_data['location'].get('region',''),
+                }
                 fb_place = FacebookPlace.objects.create(**location_dict)
                 fb_place.save()
         return fb_place
