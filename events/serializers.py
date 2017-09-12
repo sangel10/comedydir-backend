@@ -3,7 +3,7 @@ from events.models import FacebookEvent, FacebookPlace
 
 class FacebookPlaceSerializer(serializers.ModelSerializer):
     class Meta:
-        model = FacebookEvent
+        model = FacebookPlace
         fields = (
             'latitude',
             'longitude',
@@ -17,8 +17,7 @@ class FacebookPlaceSerializer(serializers.ModelSerializer):
         )
 
 class FacebookEventSerializer(serializers.ModelSerializer):
-    # facebook_place = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    # facebook_place = FacebookPlaceSerializer()
+    facebook_place = FacebookPlaceSerializer(read_only=True)
     class Meta:
         model = FacebookEvent
         fields = (
