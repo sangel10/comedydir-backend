@@ -13,7 +13,8 @@ class Command(BaseCommand):
 
     GRAPH = facebook.GraphAPI(access_token=settings.FACEBOOK_ACCESS_TOKEN, \
         version=settings.FACEBOOK_GRAPH_API_VERSION)
-    FACEBOOK_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
+    # MOVE THIS TO CONSTANTS
+    FACEBOOK_DATETIME_FORMAT = settings.FACEBOOK_DATETIME_FORMAT
 
     def save_page(self, page_data):
         page = self.GRAPH.get_object(page_id, fields='about,name,picture')

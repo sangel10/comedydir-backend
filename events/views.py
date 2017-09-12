@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
+from django.conf import settings
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from events.models import FacebookEvent
 from events.serializers import FacebookEventSerializer
-from datetime import datetime
+from datetime import datetime, timedelta
 from rest_framework import generics
 
 def fb_event_list(request):
@@ -46,10 +47,22 @@ class FacebookEventList(generics.ListAPIView):
         This view should return a list of all the purchases for
         the user as determined by the username portion of the URL.
         """
-        if self.kwargs['country']:
+        if self.request.query_params.get('start_time', None):
+            start_time = self.request.query_params.get('start_time', None)
+            start_time = datetime.strptime(self.request.query_params.get('start_time'), settings.FACEBOOK_DATETIME_FORMAT)
+        else:
+             start_time = datetime.now()
+        end_time = self.request.query_params.get('end_time', None) or (start_time + timedelta(days=30))
+        if self.kwargs.get('country', None):
             country = self.kwargs['country']
             print('HAS country', self.kwargs)
-            qs = FacebookEvent.objects.filter(facebook_place__facebook_country__iexact=country)
+            qs = FacebookEvent.objects.filter(
+                facebook_place__facebook_country__iexact=country,
+                start_time__gte=start_time,
+                start_time__lte=end_time,
+            )
+        else:
+            qs = FacebookEvent.objects.filter(start_time__gte=start_time, start_time__lte=end_time)
         if self.kwargs.get('region', None):
             region = self.kwargs.get('region', None)
             print('HAS REGION', region)
