@@ -48,21 +48,21 @@ class FacebookEventList(generics.ListAPIView):
         the user as determined by the username portion of the URL.
         """
         if self.request.query_params.get('start_time', None):
-            start_time = self.request.query_params.get('start_time', None)
-            start_time = datetime.strptime(self.request.query_params.get('start_time'), settings.FACEBOOK_DATETIME_FORMAT)
+            start_time = self.request.query_params.get('start_time')
+            start_time = datetime.fromtimestamp(float(self.request.query_params.get('start_time')))
         else:
              start_time = datetime.now()
-        end_time = self.request.query_params.get('end_time', None) or (start_time + timedelta(days=30))
+
+        end_time = start_time + timedelta(days=30)
+        if (self.request.query_params.get('end_time', None)):
+            end_time = datetime.fromtimestamp(float(self.request.query_params.get('end_time')))
+        qs = FacebookEvent.objects.filter(end_time__gte=start_time, start_time__lte=end_time)
         if self.kwargs.get('country', None):
             country = self.kwargs['country']
             print('HAS country', self.kwargs)
-            qs = FacebookEvent.objects.filter(
+            qs = qs.filter(
                 facebook_place__facebook_country__iexact=country,
-                start_time__gte=start_time,
-                start_time__lte=end_time,
             )
-        else:
-            qs = FacebookEvent.objects.filter(start_time__gte=start_time, start_time__lte=end_time)
         if self.kwargs.get('region', None):
             region = self.kwargs.get('region', None)
             print('HAS REGION', region)

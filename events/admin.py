@@ -16,7 +16,7 @@ class FacebookEventAdmin(admin.ModelAdmin):
     )
     list_display = (
         'name',
-        'description',
+        # 'description',
         'start_time',
         'end_time',
         'facebook_place',
