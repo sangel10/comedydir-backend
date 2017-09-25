@@ -8,37 +8,6 @@ from events.serializers import FacebookEventSerializer
 from datetime import datetime, timedelta
 from rest_framework import generics
 
-def fb_event_list(request):
-    """
-    List all code fb_events, or create a new fb_event.
-    """
-    if request.method == 'GET':
-        print('START TIME', request.GET.get('start_time', None))
-        start_time = request.GET.get('start_time', None) or datetime.now()
-
-        # longitude_start = self.kwargs.get['longitude']
-        # longitude_end = self.kwargs.get['longitude']
-        # latitude_start = self.kwargs['latitude']
-        # latitude_end = self.kwargs['latitude']
-        fb_events = FacebookEvent.objects.filter(start_time__gte=start_time)
-        serializer = FacebookEventSerializer(fb_events, many=True)
-        return JsonResponse(serializer.data, safe=False)
-
-
-def fb_event_detail(request, facebook_id):
-    """
-    Retrieve, update or delete a code fb_event.
-    """
-    try:
-        fb_event = FacebookEvent.objects.get(facebook_id=facebook_id)
-    except FacebookEvent.DoesNotExist:
-        return HttpResponse(status=404)
-
-    if request.method == 'GET':
-        serializer = FacebookEventSerializer(fb_event)
-        return JsonResponse(serializer.data)
-
-
 class FacebookEventList(generics.ListAPIView):
     serializer_class = FacebookEventSerializer
 

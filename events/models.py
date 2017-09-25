@@ -6,6 +6,7 @@ from django.utils.html import format_html
 from datetime import datetime, timedelta
 import googlemaps
 import re
+from geopy.distance import vincenty
 
 gmaps = googlemaps.Client(key=settings.GOOGLE_MAP_API_KEY)
 
@@ -79,6 +80,14 @@ class FacebookPlace(models.Model):
 
     def __str__(self):
         return '{} - {}, {}'.format(self.facebook_name, self.facebook_city, self.facebook_country)
+
+    def distance_from_target(self, target_lat, target_lon):
+        if not target_lat or not target_lon:
+            return None
+        instance_point = (self.latitude, self.longitude)
+        target_point = (target_lat, target_lon)
+        # TODO great_earth is twice as fast to calculate as vincenty but not as accurate
+        return vincenty(instance_point, target_point).meters
 
     class Meta:
         unique_together = (('latitude', 'longitude'),)
