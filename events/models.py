@@ -36,7 +36,7 @@ class FacebookEvent(models.Model):
         indexes = [
             models.Index(fields=['start_time', 'end_time']),
         ]
-        ordering = ['start_time']
+        # ordering = ['start_time']
 
 @receiver(pre_save, sender=FacebookEvent)
 def pre_save_fb_event(sender, instance, **kwargs):

@@ -168,7 +168,8 @@ FACEBOOK_GRAPH_API_VERSION = '2.10'
 # AUTH_USER_MODEL = 'django_facebook.FacebookCustomUser'
 
 REST_FRAMEWORK = {
-    'PAGE_SIZE': 25
+    'PAGE_SIZE': 50,
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
 FACEBOOK_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S%z'

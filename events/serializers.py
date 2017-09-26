@@ -26,6 +26,8 @@ class FacebookPlaceSerializer(serializers.ModelSerializer):
 
 class FacebookEventSerializer(serializers.ModelSerializer):
     facebook_place = FacebookPlaceSerializer(read_only=True)
+    distance_from_target = serializers.SerializerMethodField()
+
     class Meta:
         model = FacebookEvent
         fields = (
@@ -37,4 +39,14 @@ class FacebookEventSerializer(serializers.ModelSerializer):
             'facebook_id',
             'image_url',
             'pk',
+            'distance_from_target',
+
         )
+    def get_distance_from_target(self, obj):
+        if not obj.facebook_place:
+            return None
+        latitude = self.context['request'].query_params.get('latitude', None)
+        longitude = self.context['request'].query_params.get('longitude', None)
+        if longitude is None or latitude is None:
+            return None
+        return obj.facebook_place.distance_from_target(latitude, longitude)

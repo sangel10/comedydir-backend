@@ -7,9 +7,13 @@ from events.models import FacebookEvent
 from events.serializers import FacebookEventSerializer
 from datetime import datetime, timedelta
 from rest_framework import generics
+from rest_framework.filters import OrderingFilter
 
 class FacebookEventList(generics.ListAPIView):
     serializer_class = FacebookEventSerializer
+    filter_backends = (OrderingFilter,)
+    # ordering_fields = '__all__'
+    # ordering = ('-distance_from_target',)
 
     def get_queryset(self):
         """
@@ -40,5 +44,15 @@ class FacebookEventList(generics.ListAPIView):
             city = self.kwargs.get('city', None)
             print('HAS CITY', city)
             qs = qs.filter(facebook_place__facebook_city__iexact=city)
+        #
+        # print (self.kwargs.get('latitude', None) and self.kwargs.get('longitude', None))
+        # if self.kwargs.get('latitude', None) and self.kwargs.get('longitude', None):
+        #     print('SORTING')
+        #     unsorted_results = qs.all()
+        #     latitude = self.kwargs.get('latitude', None)
+        #     longitude = self.kwargs.get('longitude', None)
+        #     sorted_results = sorted(unsorted_results, key= lambda t: t.get_distance_from_target(latitude, longitude))
+        #     return sorted_results
 
+        print ('QS')
         return qs
