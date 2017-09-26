@@ -9,6 +9,7 @@ Django==1.11.4
 django-annoying==0.10.3
 django-cors-headers==2.1.0
 django-debug-toolbar==1.8
+django-filter==1.0.4
 django-location-field==2.0.3
 django-map-widgets==0.1.9
 django-npm==1.0.0
