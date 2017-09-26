@@ -12,8 +12,6 @@ from rest_framework.filters import OrderingFilter
 class FacebookEventList(generics.ListAPIView):
     serializer_class = FacebookEventSerializer
     filter_backends = (OrderingFilter,)
-    # ordering_fields = '__all__'
-    # ordering = ('-distance_from_target',)
 
     def get_queryset(self):
         """
@@ -44,15 +42,20 @@ class FacebookEventList(generics.ListAPIView):
             city = self.kwargs.get('city', None)
             print('HAS CITY', city)
             qs = qs.filter(facebook_place__facebook_city__iexact=city)
-        #
-        # print (self.kwargs.get('latitude', None) and self.kwargs.get('longitude', None))
-        # if self.kwargs.get('latitude', None) and self.kwargs.get('longitude', None):
-        #     print('SORTING')
-        #     unsorted_results = qs.all()
-        #     latitude = self.kwargs.get('latitude', None)
-        #     longitude = self.kwargs.get('longitude', None)
-        #     sorted_results = sorted(unsorted_results, key= lambda t: t.get_distance_from_target(latitude, longitude))
-        #     return sorted_results
-
-        print ('QS')
         return qs
+
+    # this method runs after whatever default ordering DRF does
+    def filter_queryset(self, queryset):
+        queryset = super(FacebookEventList, self).filter_queryset(queryset)
+        # TODO: this is a hack, if distance_from_target is in the ordering
+        # queryParam at all we just order by that.
+        # This was done as there is no standard way to order DRF results by modelMethod
+        if 'distance_from_target' not in self.request.query_params.get('ordering', ''):
+            return queryset
+        if self.request.query_params.get('latitude', None) and self.request.query_params.get('longitude', None):
+            unsorted_results = queryset
+            latitude = self.request.query_params.get('latitude', None)
+            longitude = self.request.query_params.get('longitude', None)
+            sorted_results = sorted(unsorted_results, key= lambda t: t.facebook_place.distance_from_target(latitude, longitude))
+            return sorted_results
+        return queryset
