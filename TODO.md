@@ -17,11 +17,16 @@
 
 
 # API
-  / events - all events
-  / events/ country - events filtered by country
-  / events/ country / region
-  events/country/{region OR city}
-  events/country/region/city
+  - single search endpoint
+    - filter by
+      - country
+      - region
+      - city
+      - start/end time
+    - order by
+      - start time
+      - distance from me
+    
 
   - all endpoints can be filtered by
     - start time (defaults to datetime.now())
@@ -30,6 +35,10 @@
   - /events can filter by longitude/latitude
 
 # To Do
+  - insane FAQ (sexual, obscene ridiculous)
+    - the copy on this site is a chance to show off your writing skills
+        - If you insist on continuing comedy, here are your fucking open mics -
+        - aphorisms, tips
   - Add LINTERS!
   - add long/lat and start& end to URLs
   - Show points on google map
