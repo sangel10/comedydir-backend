@@ -3,7 +3,7 @@ import facebook
 from django.conf import settings
 from datetime import datetime, timedelta
 import re
-from events.models import FacebookEvent, FacebookPlace, FacebookGroup
+from events.models import FacebookEvent, FacebookPlace, FacebookGroup, FacebookPage
 from pprint import pprint
 from psycopg2 import IntegrityError
 from decimal import Decimal
@@ -34,7 +34,7 @@ class Command(BaseCommand):
             try:
                 # DecimalField doesn't always give an exact match, so we add some padding to catch
                 # inexact numbers
-                offset = 0.000001
+                offset = 0.000002
                 fb_place = FacebookPlace.objects.get(
                     latitude__gte=(location_data['location']['latitude'] - offset),
                     latitude__lte=(location_data['location']['latitude'] + offset),
@@ -48,8 +48,8 @@ class Command(BaseCommand):
                     'facebook_id': place_data['id'],
                     'latitude':  place_data['location']['latitude'],
                     'longitude':  place_data['location']['longitude'],
-                    'facebook_city':  place_data['location']['city'],
-                    'facebook_country':  place_data['location']['country'],
+                    'facebook_city':  place_data['location'].get('city', ''),
+                    'facebook_country':  place_data['location'].get('country', ''),
                     'facebook_street':  place_data['location'].get('street',''),
                     'facebook_zip':  place_data['location'].get('zip',''),
                     'facebook_region':  place_data['location'].get('region',''),
@@ -71,6 +71,13 @@ class Command(BaseCommand):
         # we only care about events that can be mapped
         if 'place' not in event_data:
             return
+
+        try:
+            fb_event = FacebookEvent.objects.get(facebook_id = event_id)
+            self.stdout.write('Existing event {} - {}'.format(event_data['name'], event_data['id']))
+            return fb_event
+        except FacebookEvent.DoesNotExist:
+            pass
 
         location = self.save_location(event_data['place'])
         if not location:
@@ -106,7 +113,7 @@ class Command(BaseCommand):
         self.stdout.write('Saving event {} - {}'.format(event_data['name'], event_data['id']))
         return fb_event
 
-    def handle(self, *args, **kwargs):
+    def get_posts_from_groups(self):
         days = 90
         last_month = datetime.now() - timedelta(days=days)
         since_timestamp = round(last_month.timestamp())
@@ -132,6 +139,53 @@ class Command(BaseCommand):
                     for tag in connection['message_tags']:
                         if 'type' in tag and tag['type'] is 'event':
                             self.save_event(tag['id'])
+    def get_pages_from_post(self):
+        comments = self.GRAPH.get_all_connections(1824334737877573, "comments", fields='message,message_tags')
+        for c in comments:
+            print(c)
+            message = c.get('message', None)
+            # TODO: for now we just assume the message is a url pointing to a FB page
+            if not message:
+                continue
+            if 'facebook.com/' in message:
+                match_obj = re.search(r'facebook\.com\/(.+)\/', message)
+                if match_obj and match_obj.group(1):
+                    page_id = match_obj.group(1)
+                    print('MATCH', match_obj.group(1))
+                    # page = self.GRAPH.get_object(id=page_id, fields="name, about")
+                    try:
+                        page = self.GRAPH.get_object(id="https%3A//facebook.com/{}".format(page_id),fields="name,about")
+                    except Exception as e:
+                        print(e)
+                        continue
+
+                    print('PAGe', page)
+                    fb_page, created = FacebookPage.objects.get_or_create(facebook_id=page_id)
+                    fb_page.about = page.get('about')
+                    fb_page.name = page.get('name')
+                    fb_page.save()
 
 
+        # import pdb; pdb.set_trace()
+
+    def get_events_from_pages(self):
+        for page in FacebookPage.objects.all():
+            last_month = datetime.now() - timedelta(days=30)
+            since_timestamp = round(last_month.timestamp())
+            try:
+                object_exists = self.GRAPH.get_object(id=page.facebook_id)
+            except facebook.GraphAPIError as e:
+                print('CAUGHT ERROR', e)
+                continue
+            connections = self.GRAPH.get_all_connections(page.facebook_id, 'events', fields='link,message,message_tags',since=since_timestamp)
+            for c in connections:
+                print('EVENT', c)
+                self.save_event(c.get('id'))
+
+        pass
+
+    def handle(self, *args, **kwargs):
+        # self.get_posts_from_groups()
+        # self.get_pages_from_post()
+        self.get_events_from_pages()
         self.stdout.write(self.style.SUCCESS('All done :)'))
