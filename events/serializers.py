@@ -16,6 +16,7 @@ class FacebookPlaceSerializer(serializers.ModelSerializer):
             'facebook_id',
             'facebook_region',
             'distance_from_target',
+            'pk',
         )
     def get_distance_from_target(self, obj):
         latitude = self.context['request'].query_params.get('latitude', None)
