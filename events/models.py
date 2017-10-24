@@ -1,5 +1,6 @@
 from django.conf import settings
-from django.db import models
+# from django.db import models
+from django.contrib.gis.db import models
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.html import format_html
@@ -68,6 +69,7 @@ class FacebookPlace(models.Model):
     facebook_street = models.CharField(max_length=255, null=True)
     facebook_id = models.CharField(max_length=255, blank=True)
     facebook_region = models.CharField(max_length=255, blank=True)
+    point = models.PointField(null=True)
     # google_formatted_address = models.CharField(max_length=255, blank=True)
     # google_country = models.CharField(max_length=255, blank=True)
     # google_administrative_area_level_1 = models.CharField(max_length=255, blank=True)
@@ -87,7 +89,7 @@ class FacebookPlace(models.Model):
         instance_point = (self.latitude, self.longitude)
         target_point = (target_lat, target_lon)
         # TODO great_earth is twice as fast to calculate as vincenty but not as accurate
-        return vincenty(instance_point, target_point).meters
+        return vincenty(instance_point, target_point).kilometers
 
     class Meta:
         unique_together = (('latitude', 'longitude'),)
