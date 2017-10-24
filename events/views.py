@@ -52,13 +52,16 @@ class FacebookEventList(generics.ListAPIView):
 
             pnt = GEOSGeometry('POINT({} {})'.format(latitude, longitude), srid=4326)
             if self.request.query_params.get('radius', None):
-                radius = self.request.query_params.get('radius', None)
-                qs = qs.filter(facebook_place__point__distance_lte=(pnt, D(km=radius*2)))
+                # we double the radius to be safe, we just need to exclude the majority of events
+                # but as geodjango lookups are not 100% accurate we cast a wider net in the lookup
+                # and filter later
+                radius = int(float(self.request.query_params.get('radius', None))*2)
+                qs = qs.filter(facebook_place__point__distance_lte=(pnt, D(km=radius)))
             qs = qs.annotate(distance=Distance('facebook_place__point', pnt))
         return qs
 
     # this method runs after whatever default ordering DRF does
-    We use this to manually order results by a model method
+    # We use this to manually order results by a model method
     def filter_queryset(self, queryset):
         queryset = super(FacebookEventList, self).filter_queryset(queryset)
         if 'distance_from_target' not in self.request.query_params.get('ordering', ''):
@@ -66,9 +69,16 @@ class FacebookEventList(generics.ListAPIView):
 
         latitude = self.request.query_params.get('latitude', None)
         longitude = self.request.query_params.get('longitude', None)
+        radius = float(self.request.query_params.get('radius', None))
 
         if latitude and longitude:
-            sorted_results = sorted(queryset, key= lambda t: t.facebook_place.distance_from_target(latitude, longitude))
+            unsorted_results = []
+            for item in queryset:
+                item.facebook_place.distance_from_t = item.facebook_place.distance_from_target(latitude, longitude)
+                if radius and item.facebook_place.distance_from_t > radius:
+                    continue
+                unsorted_results.append(item)
+            sorted_results = sorted(unsorted_results, key= lambda t: t.facebook_place.distance_from_t)
             return sorted_results
 
         return queryset
