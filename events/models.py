@@ -69,7 +69,7 @@ class FacebookPlace(models.Model):
     facebook_street = models.CharField(max_length=255, null=True)
     facebook_id = models.CharField(max_length=255, blank=True)
     facebook_region = models.CharField(max_length=255, blank=True)
-    point = models.PointField(null=True)
+    point = models.PointField(null=True, geography=True)
     # google_formatted_address = models.CharField(max_length=255, blank=True)
     # google_country = models.CharField(max_length=255, blank=True)
     # google_administrative_area_level_1 = models.CharField(max_length=255, blank=True)

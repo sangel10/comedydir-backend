@@ -16,6 +16,19 @@
       - add a 'flag' option for events to remove accident adds (parties, etc)
 
 
+# MAP
+  - Displays query
+  - clicking on marker expands and shows event info
+  - click on marker highlights event in list
+  - clicking on event shows /centers marker in map
+  - map is zoomed to contain all events
+
+  - show "center" in map
+  - when query updates, map updates
+  - when map is dragged, zoomed, center changes, we show
+
+  - ? keep track of repeat locations?
+
 # API
   - single search endpoint
     - filter by
@@ -26,7 +39,7 @@
     - order by
       - start time
       - distance from me
-    
+
 
   - all endpoints can be filtered by
     - start time (defaults to datetime.now())

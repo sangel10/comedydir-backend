@@ -7,6 +7,9 @@ start postgresql
 
 `postgres -D /usr/local/var/postgres`
 
+`pg_ctl -D /usr/local/var/postgres stop`
+`pg_ctl -D /usr/local/var/postgres start`
+
 
 or use `pg-start` and `pg-stop` ??
 
