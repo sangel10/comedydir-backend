@@ -7,7 +7,7 @@ from django.utils.html import format_html
 from datetime import datetime, timedelta
 import googlemaps
 import re
-from geopy.distance import vincenty
+from geopy.distance import vincenty, great_circle
 
 gmaps = googlemaps.Client(key=settings.GOOGLE_MAP_API_KEY)
 
@@ -89,7 +89,8 @@ class FacebookPlace(models.Model):
         instance_point = (self.latitude, self.longitude)
         target_point = (target_lat, target_lon)
         # TODO great_earth is twice as fast to calculate as vincenty but not as accurate
-        return vincenty(instance_point, target_point).kilometers
+        # return vincenty(instance_point, target_point).kilometers
+        return great_circle(instance_point, target_point).kilometers
 
     class Meta:
         unique_together = (('latitude', 'longitude'),)
