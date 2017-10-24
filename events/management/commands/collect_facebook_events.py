@@ -7,6 +7,7 @@ from events.models import FacebookEvent, FacebookPlace, FacebookGroup, FacebookP
 from pprint import pprint
 from psycopg2 import IntegrityError
 from decimal import Decimal
+from django.contrib.gis.geos import Point
 
 class Command(BaseCommand):
     help = 'Reads facebook data and saves events in DB'
@@ -48,6 +49,7 @@ class Command(BaseCommand):
                     'facebook_id': place_data['id'],
                     'latitude':  place_data['location']['latitude'],
                     'longitude':  place_data['location']['longitude'],
+                    'point': Point(place_data['location']['latitude'], place_data['location']['longitude']),
                     'facebook_city':  place_data['location'].get('city', ''),
                     'facebook_country':  place_data['location'].get('country', ''),
                     'facebook_street':  place_data['location'].get('street',''),
@@ -186,6 +188,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         self.get_posts_from_groups()
-        # self.get_pages_from_post()
+        self.get_pages_from_post()
         self.get_events_from_pages()
         self.stdout.write(self.style.SUCCESS('All done :)'))
