@@ -9,6 +9,11 @@ from datetime import datetime, timedelta
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter
 
+from django.contrib.gis.geos import GEOSGeometry, Point
+from django.contrib.gis.measure import D # ``D`` is a shortcut for ``Distance``
+from django.contrib.gis.db.models.functions import Distance
+from geopy.distance import distance
+
 class FacebookEventList(generics.ListAPIView):
     serializer_class = FacebookEventSerializer
     filter_backends = (OrderingFilter,)
@@ -37,29 +42,33 @@ class FacebookEventList(generics.ListAPIView):
         if self.request.query_params.get('city', None):
             city = self.request.query_params.get('city', None)
             qs = qs.filter(facebook_place__facebook_city__iexact=city)
+        if self.request.query_params.get('latitude', None) and self.request.query_params.get('longitude', None):
+            latitude = self.request.query_params.get('latitude', None)
+            longitude = self.request.query_params.get('longitude', None)
+            # TODO: Improve distance filtering
+            # Currently we're using a hybrid of distance lookups for filtering and then
+            # manually sorting by the geopy values (below) as the distance values returned
+            # by the DB are inaccurate.
+
+            pnt = GEOSGeometry('POINT({} {})'.format(latitude, longitude), srid=4326)
+            if self.request.query_params.get('radius', None):
+                radius = self.request.query_params.get('radius', None)
+                qs = qs.filter(facebook_place__point__distance_lte=(pnt, D(km=radius*2)))
+            qs = qs.annotate(distance=Distance('facebook_place__point', pnt))
         return qs
 
     # this method runs after whatever default ordering DRF does
+    We use this to manually order results by a model method
     def filter_queryset(self, queryset):
         queryset = super(FacebookEventList, self).filter_queryset(queryset)
-        radius = self.request.query_params.get('radius', None)
-        latitude = self.request.query_params.get('latitude', None)
-        longitude = self.request.query_params.get('longitude', None)
-
-        # if we have a point and a radius we can return make a sub-queryset
-        if radius and latitude and longitude:
-            print('RADIUS', radius)
-            queryset = [item for item in queryset if item.facebook_place.distance_from_target(latitude, longitude) < int(radius)]
-
-        # if we don't explicitly want to sort by distance we just return the sub-queryset
         if 'distance_from_target' not in self.request.query_params.get('ordering', ''):
             return queryset
 
-        # TODO: this is hack
-        # If distance_from_target is in the ordering queryParams at all we just order by that.
-        # This was done as there is no standard way to order DRF results by modelMethod
+        latitude = self.request.query_params.get('latitude', None)
+        longitude = self.request.query_params.get('longitude', None)
+
         if latitude and longitude:
-            unsorted_results = queryset
-            sorted_results = sorted(unsorted_results, key= lambda t: t.facebook_place.distance_from_target(latitude, longitude))
+            sorted_results = sorted(queryset, key= lambda t: t.facebook_place.distance_from_target(latitude, longitude))
             return sorted_results
+
         return queryset
