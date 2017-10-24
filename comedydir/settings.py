@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'mapwidgets',
     'debug_toolbar',
     'rest_framework',
@@ -81,7 +82,8 @@ WSGI_APPLICATION = 'comedydir.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        # 'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'USER': '',
         'NAME': 'comedy',
         'HOST': '127.0.0.1',
