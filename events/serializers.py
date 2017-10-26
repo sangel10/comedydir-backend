@@ -27,7 +27,14 @@ class FacebookPlaceSerializer(serializers.ModelSerializer):
         longitude = self.context['request'].query_params.get('longitude', None)
         if longitude is None or latitude is None:
             return None
-        return obj.distance_from_t or None
+        try:
+            distance = obj.distance_from_t
+            return distance
+        except AttributeError:
+            return None
+
+
+
 
 class FacebookEventSerializer(serializers.ModelSerializer):
     facebook_place = FacebookPlaceSerializer(read_only=True)
@@ -56,4 +63,8 @@ class FacebookEventSerializer(serializers.ModelSerializer):
         longitude = self.context['request'].query_params.get('longitude', None)
         if longitude is None or latitude is None:
             return None
-        return obj.facebook_place.distance_from_t
+        try:
+            distance = obj.facebook_place.distance_from_t
+            return distance
+        except AttributeError:
+            return None
