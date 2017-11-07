@@ -116,7 +116,7 @@ class Command(BaseCommand):
         return fb_event
 
     def get_posts_from_groups(self):
-        days = 90
+        days = 10
         last_month = datetime.now() - timedelta(days=days)
         since_timestamp = round(last_month.timestamp())
         for group in FacebookGroup.objects.all():
@@ -128,7 +128,7 @@ class Command(BaseCommand):
                 continue
             group.name = connection['name']
             group.save()
-            connections = self.GRAPH.get_all_connections(group_id, 'feed', fields='link,message,message_tags',since=since_timestamp)
+            connections = self.GRAPH.get_all_connections(group_id, 'feed', fields='link,message,message_tags', since=since_timestamp)
             for index, connection in enumerate(connections):
                 for item in ['link', 'message']:
                     # match for event urls and capture the ID
@@ -183,8 +183,6 @@ class Command(BaseCommand):
             for c in connections:
                 print('EVENT', c)
                 self.save_event(c.get('id'))
-
-        pass
 
     def handle(self, *args, **kwargs):
         self.get_posts_from_groups()
