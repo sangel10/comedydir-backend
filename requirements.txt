@@ -20,6 +20,7 @@ flake8==3.5.0
 geopy==1.11.0
 googlemaps==2.5.1
 greenlet==0.4.12
+gunicorn==19.7.1
 icalendar==3.11.7
 idna==2.6
 ipython-genutils==0.2.0
@@ -49,5 +50,6 @@ sqlparse==0.2.3
 traitlets==4.3.2
 Unidecode==0.4.21
 urllib3==1.22
+virtualenv==15.1.0
 wcwidth==0.1.7
 wrapt==1.10.11
