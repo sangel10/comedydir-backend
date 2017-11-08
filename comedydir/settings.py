@@ -11,7 +11,12 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from os.path import join, dirname
 import dj_database_url
+from dotenv import load_dotenv
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -83,16 +88,11 @@ WSGI_APPLICATION = 'comedydir.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql',
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'USER': '',
-        'NAME': 'comedy',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
     }
 }
 
-db_from_env = dj_database_url.config()
+db_from_env = dj_database_url.config(conn_max_age=500)
+# Gets DB config from DATABASE_URL env variable
 DATABASES['default'].update(db_from_env)
 
 
@@ -138,9 +138,17 @@ STATICFILES_FINDERS =[
 ]
 
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 # STATIC_ROOT = 'static'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+)
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 GOOGLE_MAP_API_KEY = GOOGLE_API_KEY = GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyCfEghEN8EUWO5-w6aEof1vnc5xSFJ0f3U'
 
