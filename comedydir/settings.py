@@ -184,3 +184,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 #     'localhost:8000',
 #     '127.0.0.1:9000'
 # )
+
+GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH')
+GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH')
