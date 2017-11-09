@@ -196,7 +196,9 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Do not set on server so they default to NONE
 # https://www.alextomkins.com/2017/08/fixing-gdal-geos-django-macos/
-GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH')
-GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH')
+# GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH')
+# GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH')
+GEOS_LIBRARY_PATH = "{}/libgeos_c.so".format(os.getenv('GEOS_LIBRARY_PATH'))
+GDAL_LIBRARY_PATH = "{}/libgdal.so".format(os.getenv('GDAL_LIBRARY_PATH'))
 # GEOS_LIBRARY_PATH = "{}/libgeos_  c.so".format(os.environ.get('GEOS_LIBRARY_PATH'))
 # GDAL_LIBRARY_PATH = "{}/libgdal.so".format(os.environ.get('GDAL_LIBRARY_PATH'))
