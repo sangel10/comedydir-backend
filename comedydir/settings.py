@@ -35,7 +35,6 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -205,3 +204,6 @@ GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH')
 # GDAL_LIBRARY_PATH = "{}/libgdal.so".format(os.getenv('GDAL_LIBRARY_PATH'))
 # GEOS_LIBRARY_PATH = "{}/libgeos_  c.so".format(os.environ.get('GEOS_LIBRARY_PATH'))
 # GDAL_LIBRARY_PATH = "{}/libgdal.so".format(os.environ.get('GDAL_LIBRARY_PATH'))
+
+
+FACEBOOK_GROUP_ID = '1814445198866527'
