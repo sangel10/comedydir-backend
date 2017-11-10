@@ -30,7 +30,10 @@ SECRET_KEY = 'hg%!x5_9fc)-_$$wdm0)+6awb32xe2i454lu&!1v9mcesxeanz'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'comedydir-backend.herokuapp.com',
+    '127.0.0.1',
+]
 
 
 # Application definition
