@@ -149,9 +149,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_ROOT, 'static'),
-)
+# STATICFILES_DIRS = (
+#     os.path.join(PROJECT_ROOT, 'static'),
+# )
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 GOOGLE_MAP_API_KEY = GOOGLE_API_KEY = GEOPOSITION_GOOGLE_MAPS_API_KEY = 'AIzaSyCfEghEN8EUWO5-w6aEof1vnc5xSFJ0f3U'
@@ -164,10 +164,6 @@ MAP_WIDGETS = {
     "GOOGLE_MAP_API_KEY": GOOGLE_MAP_API_KEY
 }
 
-# Do not set on server so they default to NONE
-# https://www.alextomkins.com/2017/08/fixing-gdal-geos-django-macos/
-GDAL_LIBRARY_PATH = os.environ.get('GDAL_LIBRARY_PATH')
-GEOS_LIBRARY_PATH = os.environ.get('GEOS_LIBRARY_PATH')
 
 INTERNAL_IPS = ['127.0.0.1']
 
@@ -201,5 +197,11 @@ CORS_ORIGIN_ALLOW_ALL = True
 #     '127.0.0.1:9000'
 # )
 
+# Do not set on server so they default to NONE
+# https://www.alextomkins.com/2017/08/fixing-gdal-geos-django-macos/
 GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH')
 GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH')
+# GEOS_LIBRARY_PATH = "{}/libgeos_c.so".format(os.getenv('GEOS_LIBRARY_PATH'))
+# GDAL_LIBRARY_PATH = "{}/libgdal.so".format(os.getenv('GDAL_LIBRARY_PATH'))
+# GEOS_LIBRARY_PATH = "{}/libgeos_  c.so".format(os.environ.get('GEOS_LIBRARY_PATH'))
+# GDAL_LIBRARY_PATH = "{}/libgdal.so".format(os.environ.get('GDAL_LIBRARY_PATH'))
