@@ -218,5 +218,5 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.get_data_from_root_group()
         self.get_posts_from_groups()
-        # self.get_events_from_pages()
+        self.get_events_from_pages()
         self.stdout.write(self.style.SUCCESS('All done :)'))

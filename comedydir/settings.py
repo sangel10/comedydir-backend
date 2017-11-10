@@ -205,5 +205,5 @@ GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH')
 # GEOS_LIBRARY_PATH = "{}/libgeos_  c.so".format(os.environ.get('GEOS_LIBRARY_PATH'))
 # GDAL_LIBRARY_PATH = "{}/libgdal.so".format(os.environ.get('GDAL_LIBRARY_PATH'))
 
-
+# The group we pull in all the data from
 FACEBOOK_GROUP_ID = '1814445198866527'
