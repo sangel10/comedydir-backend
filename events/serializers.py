@@ -52,6 +52,7 @@ class FacebookEventSerializer(serializers.ModelSerializer):
             'image_url',
             'pk',
             'distance_from_t',
+            'slug',
         )
 
     # This only works because we distance_from_t in the view
