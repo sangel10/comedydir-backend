@@ -78,3 +78,8 @@ class FacebookEventList(generics.ListAPIView):
             return sorted_results
 
         return queryset
+
+
+class FacebookEventDetail(generics.RetrieveAPIView):
+    queryset = FacebookEvent.objects.all()
+    serializer_class = FacebookEventSerializer
