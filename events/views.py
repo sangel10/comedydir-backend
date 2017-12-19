@@ -60,8 +60,9 @@ class FacebookEventList(generics.ListAPIView):
     # We use this to manually order results by a model method
     def filter_queryset(self, queryset):
         queryset = super(FacebookEventList, self).filter_queryset(queryset)
-        if 'distance_from_target' not in self.request.query_params.get('ordering', ''):
-            return queryset
+        # Don't re-sort and double check radius if we're not ordering by distances
+        # if 'distance_from_target' not in self.request.query_params.get('ordering', ''):
+        #     return queryset
 
         latitude = self.request.query_params.get('latitude', None)
         longitude = self.request.query_params.get('longitude', None)
@@ -74,6 +75,8 @@ class FacebookEventList(generics.ListAPIView):
                 if radius and item.facebook_place.distance_from_t > radius:
                     continue
                 unsorted_results.append(item)
+            if 'distance_from_target' not in self.request.query_params.get('ordering', ''):
+                return unsorted_results
             sorted_results = sorted(unsorted_results, key=lambda t: t.facebook_place.distance_from_t)
             return sorted_results
 

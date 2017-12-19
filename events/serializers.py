@@ -5,6 +5,7 @@ from django.contrib.gis.db.models.functions import Distance
 
 class FacebookPlaceSerializer(serializers.ModelSerializer):
     distance_from_t = serializers.SerializerMethodField()
+    distance = serializers.SerializerMethodField()
     class Meta:
         model = FacebookPlace
         fields = (
@@ -18,6 +19,7 @@ class FacebookPlaceSerializer(serializers.ModelSerializer):
             'facebook_id',
             'facebook_region',
             'distance_from_t',
+            'distance',
             'pk',
         )
     # This only works because we set distance_from_t in the view
@@ -29,6 +31,17 @@ class FacebookPlaceSerializer(serializers.ModelSerializer):
             return None
         try:
             distance = obj.distance_from_t
+            return distance
+        except AttributeError:
+            return None
+
+    def get_distance(self, obj):
+        latitude = self.context['request'].query_params.get('latitude', None)
+        longitude = self.context['request'].query_params.get('longitude', None)
+        if longitude is None or latitude is None:
+            return None
+        try:
+            distance = obj.distance_from_target(latitude, longitude)
             return distance
         except AttributeError:
             return None

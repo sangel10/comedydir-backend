@@ -80,13 +80,11 @@ class FacebookPlace(models.Model):
     def __str__(self):
         return '{} - {}, {}'.format(self.facebook_name, self.facebook_city, self.facebook_country)
 
-    def distance_from_target(self, target_lat, target_lon):
-        if not target_lat or not target_lon:
+    def distance_from_target(self, target_lat, target_lng):
+        if not target_lat or not target_lng:
             return None
         instance_point = (self.latitude, self.longitude)
-        target_point = (target_lat, target_lon)
-        # TODO great_earth is twice as fast to calculate as vincenty but not as accurate
-        # return vincenty(instance_point, target_point).kilometers
+        target_point = (target_lat, target_lng)
         return great_circle(instance_point, target_point).kilometers
 
     class Meta:
