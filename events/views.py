@@ -7,9 +7,8 @@ from django.contrib.gis.db.models.functions import Distance
 from rest_framework import generics
 from rest_framework.filters import OrderingFilter
 
-from events.models import FacebookEvent
-from events.serializers import FacebookEventSerializer
-
+from events.models import FacebookEvent, FacebookPage
+from events.serializers import FacebookEventSerializer, FacebookPageSerializer
 
 class FacebookEventList(generics.ListAPIView):
     serializer_class = FacebookEventSerializer
@@ -86,3 +85,9 @@ class FacebookEventList(generics.ListAPIView):
 class FacebookEventDetail(generics.RetrieveAPIView):
     queryset = FacebookEvent.objects.all()
     serializer_class = FacebookEventSerializer
+
+class FacebookPageList(generics.ListAPIView):
+    queryset = FacebookPage.objects.all().order_by('name')
+    serializer_class = FacebookPageSerializer
+    search_fields = ('name', 'facebook_id')
+    ordering = ('name',)
