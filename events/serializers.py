@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from events.models import FacebookEvent, FacebookPlace
-from django.contrib.gis.measure import D # ``D`` is a shortcut for ``Distance``
-from django.contrib.gis.db.models.functions import Distance
+from events.models import FacebookEvent, FacebookPlace, FacebookPage
 
 class FacebookPlaceSerializer(serializers.ModelSerializer):
     distance_from_t = serializers.SerializerMethodField()
@@ -82,3 +80,12 @@ class FacebookEventSerializer(serializers.ModelSerializer):
             return distance
         except AttributeError:
             return None
+
+
+class FacebookPageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FacebookPage
+        fields = (
+            'name',
+            'facebook_id',
+        )
