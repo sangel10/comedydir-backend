@@ -187,14 +187,7 @@ REST_FRAMEWORK = {
 
 FACEBOOK_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
 
-# TODO: Whitelist production domain when it's up
 CORS_ORIGIN_ALLOW_ALL = True
-# CORS_ORIGIN_WHITELIST = (
-#     'google.com',
-#     'hostname.example.com',
-#     'localhost:8000',
-#     '127.0.0.1:9000'
-# )
 
 # Do not set on server so they default to NONE
 # https://www.alextomkins.com/2017/08/fixing-gdal-geos-django-macos/
