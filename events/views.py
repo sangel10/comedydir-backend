@@ -4,15 +4,14 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D  # ``D`` is a shortcut for `Distance`
 from django.contrib.gis.db.models.functions import Distance
 
-from rest_framework import generics
-from rest_framework.filters import OrderingFilter
+from rest_framework import generics, filters
 
 from events.models import FacebookEvent, FacebookPage
 from events.serializers import FacebookEventSerializer, FacebookPageSerializer
 
 class FacebookEventList(generics.ListAPIView):
     serializer_class = FacebookEventSerializer
-    filter_backends = (OrderingFilter,)
+    filter_backends = (filters.OrderingFilter,)
 
 
     def get_queryset(self):
@@ -87,7 +86,8 @@ class FacebookEventDetail(generics.RetrieveAPIView):
     serializer_class = FacebookEventSerializer
 
 class FacebookPageList(generics.ListAPIView):
-    queryset = FacebookPage.objects.all().order_by('name')
+    queryset = FacebookPage.objects.all()
     serializer_class = FacebookPageSerializer
-    search_fields = ('name', 'facebook_id')
+    filter_backends = (filters.OrderingFilter, filters.SearchFilter,)
+    search_fields = ('name', 'facebook_id',)
     ordering = ('name',)
