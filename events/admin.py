@@ -1,9 +1,9 @@
 from django.contrib import admin
 
 from .models import FacebookEvent, FacebookPlace, FacebookPage, FacebookGroup
-from django.utils.html import format_html
 
 class FacebookEventAdmin(admin.ModelAdmin):
+    search_fields = ('name', 'description', )
     fields = (
         'image_url',
         'name',
@@ -16,7 +16,6 @@ class FacebookEventAdmin(admin.ModelAdmin):
     )
     list_display = (
         'name',
-        # 'description',
         'start_time',
         'end_time',
         'facebook_place',
@@ -26,6 +25,7 @@ class FacebookEventAdmin(admin.ModelAdmin):
 
 
 class FacebookPlaceAdmin(admin.ModelAdmin):
+    search_fields = ('facebook_name', 'facebook_country', 'facebook_city', 'facebook_region',)
     fields = (
         'latitude',
         'longitude',
@@ -37,15 +37,6 @@ class FacebookPlaceAdmin(admin.ModelAdmin):
         'facebook_id',
         'facebook_region',
         'point',
-        # 'google_formatted_address',
-        # 'google_country',
-        # 'google_administrative_area_level_1',
-        # 'google_administrative_area_level_2',
-        # 'google_administrative_area_level_3',
-        # 'google_locality',
-        # 'google_sublocality_level_1',
-        # 'google_sublocality_level_2',
-        # 'google_neighborhood',
     )
     list_display = (
         'facebook_name',
@@ -57,18 +48,21 @@ class FacebookPlaceAdmin(admin.ModelAdmin):
         'facebook_street',
         'facebook_id',
         'point',
-        # 'google_formatted_address',
-        # 'google_country',
-        # 'google_administrative_area_level_1',
-        # 'google_administrative_area_level_2',
-        # 'google_administrative_area_level_3',
-        # 'google_locality',
-        # 'google_sublocality_level_1',
-        # 'google_sublocality_level_2',
-        # 'google_neighborhood',
     )
+
+class FaceBookPageAdmin(admin.ModelAdmin):
+    search_fields = ('name', 'about', 'facebook_id',)
+    fields = (
+        'name',
+        'about',
+        'facebook_id',
+    )
+    list_display = (
+        'name',
+    )
+
 
 admin.site.register(FacebookEvent, FacebookEventAdmin)
 admin.site.register(FacebookPlace, FacebookPlaceAdmin)
-admin.site.register(FacebookPage)
+admin.site.register(FacebookPage, FaceBookPageAdmin)
 admin.site.register(FacebookGroup)
