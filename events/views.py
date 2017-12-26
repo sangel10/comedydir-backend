@@ -6,8 +6,8 @@ from django.contrib.gis.db.models.functions import Distance
 
 from rest_framework import generics, filters
 
-from events.models import FacebookEvent, FacebookPage
-from events.serializers import FacebookEventSerializer, FacebookPageSerializer
+from events.models import FacebookEvent, FacebookPage, CitiesIndex
+from events.serializers import FacebookEventSerializer, FacebookPageSerializer, CitiesIndexSerializer
 
 class FacebookEventList(generics.ListAPIView):
     serializer_class = FacebookEventSerializer
@@ -91,3 +91,8 @@ class FacebookPageList(generics.ListAPIView):
     filter_backends = (filters.OrderingFilter, filters.SearchFilter,)
     search_fields = ('name', 'facebook_id',)
     ordering = ('name',)
+
+class CitiesIndexDetail(generics.RetrieveAPIView):
+    serializer_class = CitiesIndexSerializer
+    def get_object(self):
+        return CitiesIndex.objects.filter(date_created__isnull=False).latest('date_created')

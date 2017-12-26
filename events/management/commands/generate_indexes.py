@@ -2,14 +2,12 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from events.models import FacebookPlace, CitiesIndex
-import pprint
 import googlemaps
 
 class Command(BaseCommand):
     help = 'Reads facebook data and saves events in DB'
 
     def handle(self, *args, **kwargs):
-        # handle1=open('cities.txt','w+')
         gmaps = googlemaps.Client(key=settings.GOOGLE_MAP_API_KEY)
 
         places = []
@@ -36,9 +34,7 @@ class Command(BaseCommand):
                     'longitude': location['lng']
                 }
                 places.append(place)
-                # handle1.write("{}, {}\n".format(city_name, country_name))
 
-        CitiesIndex.objects.create(data=places)
+        sorted_places = sorted(places, key=lambda place: "{}{}{}".format(place['country'], place['country'], place['city']))
+        CitiesIndex.objects.create(data=sorted_places)
         self.stdout.write(self.style.SUCCESS('All done :)'))
-        # self.stdout.write(self.style.SUCCESS(places))
-        # handle1.close()

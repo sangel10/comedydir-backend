@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from events.models import FacebookEvent, FacebookPlace, FacebookPage
+from events.models import FacebookEvent, FacebookPlace, FacebookPage, CitiesIndex
 
 class FacebookPlaceSerializer(serializers.ModelSerializer):
     distance_from_t = serializers.SerializerMethodField()
@@ -88,4 +88,12 @@ class FacebookPageSerializer(serializers.ModelSerializer):
         fields = (
             'name',
             'facebook_id',
+        )
+
+class CitiesIndexSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CitiesIndex
+        fields = (
+            'date_created',
+            'data',
         )

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import FacebookEvent, FacebookPlace, FacebookPage, FacebookGroup
+from .models import FacebookEvent, FacebookPlace, FacebookPage, FacebookGroup, CitiesIndex
 
 class FacebookEventAdmin(admin.ModelAdmin):
     search_fields = ('name', 'description', )
@@ -66,3 +66,4 @@ admin.site.register(FacebookEvent, FacebookEventAdmin)
 admin.site.register(FacebookPlace, FacebookPlaceAdmin)
 admin.site.register(FacebookPage, FaceBookPageAdmin)
 admin.site.register(FacebookGroup)
+admin.site.register(CitiesIndex)
