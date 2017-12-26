@@ -6,6 +6,9 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.html import format_html
 from django.utils.text import slugify
+from django.utils import timezone
+from django.contrib.postgres.fields import JSONField
+
 import googlemaps
 from geopy.distance import great_circle
 
@@ -98,3 +101,7 @@ class FacebookGroup(models.Model):
     facebook_id = models.CharField(max_length=255)
     def __str__(self):
         return '%s' % (self.name)
+
+class CitiesIndex(models.Model):
+    data = JSONField()
+    date_created = models.DateTimeField(default=timezone.now)
